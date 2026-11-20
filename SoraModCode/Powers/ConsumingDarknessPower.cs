@@ -1,9 +1,17 @@
-﻿using MegaCrit.Sts2.Core.Entities.Powers;
+﻿using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
+using SoraMod.SoraModCode.Encounters;
+using SoraMod.SoraModCode.Keywords;
 using SoraMod.SoraModCode.Powers;
 
 namespace SoraMod.SoraModCode.Powers;
 
-public class ConsumingDarkness() : SoraModPower
+public class ConsumingDarknessPower() : SoraModPower
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -11,12 +19,13 @@ public class ConsumingDarkness() : SoraModPower
 
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (!cardPlay.Card.Keywords.Contains(SoraModKeywords.Finisher))
+        if (cardPlay.Card.Affliction == null)
             return;
-        
-        CardModel card = (await CardSelectCmd.FromHandForDiscard(choiceContext, cardPlay.Player, new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1), (Func<CardModel, bool>) null, (AbstractModel) this)).FirstOrDefault<CardModel>();
-        if (card == null)
-            return;
-        await CardCmd.Discard(choiceContext, card);
+
+        if (cardPlay.Card.Affliction is Enshroud)
+        {
+            await Cmd.Wait(0.5f);
+            StrengthPower strengthPower = await PowerCmd.Apply<StrengthPower>(choiceContext, this.Owner, 1, this.Owner, (CardModel) null);
+        }
     }
 }

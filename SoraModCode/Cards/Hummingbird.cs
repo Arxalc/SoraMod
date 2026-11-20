@@ -1,21 +1,22 @@
 ﻿using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using SoraMod.SoraModCode.Cards;
 using SoraMod.SoraModCode.Keywords;
 
 namespace SoraMod.SoraModCode.Cards;
 
-public class Hummingbird() : SoraModCard(1, CardType.Skill, CardRarity.Ancient, TargetType.Self)
+public class Hummingbird() : SoraModCard(1, CardType.Attack, CardRarity.Ancient, TargetType.AnyEnemy)
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new HealVar(3M)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [ new DamageVar(1M, ValueProp.Move), new RepeatVar(3)];
     
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [SoraModKeywords.Link, CardKeyword.Exhaust]; // How to optionally add Regen?
-    // TODO: Make the base and upgraded card descriptions AND optional regen hovertip...
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [SoraModKeywords.Link, CardKeyword.Exhaust];
     
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Crafty>(this.IsUpgraded), HoverTipFactory.FromCard<PixieDust>(this.IsUpgraded)];
 
@@ -23,24 +24,18 @@ public class Hummingbird() : SoraModCard(1, CardType.Skill, CardRarity.Ancient, 
         PlayerChoiceContext choiceContext,
         CardPlay play)
     {
-        await CreatureCmd.TriggerAnim(this.Owner.Creature, "Cast", this.Owner.Character.CastAnimDelay);
+        AttackCommand attackCommand = await DamageCmd.Attack(this.DynamicVars.Damage.BaseValue).WithHitCount(this.DynamicVars.Repeat.IntValue).FromCard((CardModel) this, play).Targeting(play.Target).Execute(choiceContext);
 
-        CardModel createdCard = CombatState.CreateCard<TinkerTalent>(Owner);
-        if (play.Card.IsUpgraded)
+        CardModel createdCard = CombatState.CreateCard<Crafty>(Owner);
+        if (IsUpgraded)
         {
-            RegenPower regenPower = await PowerCmd.Apply<RegenPower>(choiceContext, Owner.Creature, DynamicVars.Heal.BaseValue, this.Owner.Creature, (CardModel) this);
             CardCmd.Upgrade(createdCard);
         }
-        else
-        {
-            await CreatureCmd.Heal(this.Owner.Creature, DynamicVars.Heal.BaseValue);
-        }
-        
-        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(createdCard, PileType.Draw, this.Owner));
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(createdCard, PileType.Draw, this.Owner, CardPilePosition.Random));
     }
 
     protected override void OnUpgrade()
     {
-
+        DynamicVars.Repeat.UpgradeValueBy(3M);
     }
 }

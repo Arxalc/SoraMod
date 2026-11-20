@@ -1,3 +1,22 @@
 {
-  
+  "SORAMOD-KINGDOM_KEY.description": "At the start of your first turn, choose a card to [gold]Retain[/gold] this turn.",
+  "SORAMOD-KINGDOM_KEY.flavor": "The manifestation of your heart's strength.\\nCan never be separated from its owner.",
+  "SORAMOD-KINGDOM_KEY.selectionScreenPrompt": "Select a card to retain.",
+  "SORAMOD-KINGDOM_KEY.title": "Kingdom Key",
+  "SORAMOD-ULTIMA_WEAPON.description": "At the start of your first turn, choose a card to [gold]Retain[/gold] this combat.",
+  "SORAMOD-ULTIMA_WEAPON.flavor": "An incredible keyblade earned by a difficult ascent.\\nOnly one keyblade is above this.",
+  "SORAMOD-ULTIMA_WEAPON.selectionScreenPrompt": "Select a card to retain.",
+  "SORAMOD-ULTIMA_WEAPON.title": "Ultima Weapon",
+  "SORAMOD-GAZING_EYE.description": "[gold]Scry[/gold] 2 before drawing your hand.",
+  "SORAMOD-GAZING_EYE.flavor": "The master’s eye sees all that has happened and all that will transpire.",
+  "SORAMOD-GAZING_EYE.title": "Gazing Eye",
+  "SORAMOD-GOLDEN_EYES.description": "Removes a random Curse. Choose two attacks to enchant with Corrupted.",
+  "SORAMOD-GOLDEN_EYES.flavor": "Though the creatures of darkness hide in shadow, their gleaming golden eyes give themselves away.",
+  "SORAMOD-GOLDEN_EYES.title": "Golden Eyes",
+  "SORAMOD-BOOK_OF_PROPHECIES.description": "Upon pickup, replace the Act 3 Map with a single special path and a different boss.",
+  "SORAMOD-BOOK_OF_PROPHECIES.flavor": "\"On that land shall darkness prevail and light expire.\"\\nThe future has already been written.",
+  "SORAMOD-BOOK_OF_PROPHECIES.title": "Book Of Prophecies",
+  "SORAMOD-MELDING_RECIPE.description": "Adds Meld as a campfire option.",
+  "SORAMOD-MELDING_RECIPE.flavor": "When you could create elixirs, powers, even life itself - what could stop you?",
+  "SORAMOD-MELDING_RECIPE.title": "Melding Recipe"
 }

@@ -1,3 +1,9 @@
 {
-  
+  "SORAMOD-LINK.title": "Link",
+  "SORAMOD-LINK.description": "Does not use your damage or block modifiers.",
+  "SORAMOD-MAGIC.title": "Magic",
+  "SORAMOD-MAGIC.description": "Power of the mystic.",
+  "SORAMOD-FINISHER.description": "Discard a card after played.",
+  "SORAMOD-FINISHER.title": "Finisher"
+
 }

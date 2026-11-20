@@ -2,6 +2,7 @@
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -11,134 +12,49 @@ using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Audio;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
+using MegaCrit.Sts2.Core.Random;
 using SoraMod.SoraModCode.Powers;
 
 namespace SoraMod.SoraModCode.Encounters;
 
-public class TheSeeker : CustomMonsterModel
+public class Ansem : CustomMonsterModel
 {
     private const string _enshroudingDarknessMove = "ENSHROUDING_DARKNESS_MOVE";
     private const string _consumingDarknessMove = "CONSUMING_DARKNESS_MOVE";
 
-    private MoveState _deadState;
-    private int _respawns;
-    
-    public override int MinInitialHp => this.FirstFormHp;
+    public override int MinInitialHp
+    {
+        get => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 240, 210);
+    }
+
     public override int MaxInitialHp => this.MinInitialHp;
-    
-    public int FirstFormHp
-    {
-        get => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 160, 140);
-    }
-
-    public int SecondFormHp
-    {
-        get => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 80, 70);
-    }
-    
-    /*
-    public override string DeathSfx
-    {
-        get
-        {
-            if (!this.IsMutable)
-                return base.DeathSfx;
-            return !this.Creature.HasPower<AdaptablePower>() ? base.DeathSfx : "event:/sfx/enemy/enemy_attacks/test_subject/test_subject_knock_out";
-        }
-    }
-    */
-    
-    private MoveState DeadState
-    {
-        get => this._deadState;
-        set
-        {
-            this.AssertMutable();
-            this._deadState = value;
-        }
-    }
-
-    private int Respawns
-    {
-        get => this._respawns;
-        set
-        {
-            this.AssertMutable();
-            this._respawns = value;
-        }
-    }
-    
-    public override bool ShouldDisappearFromDoom => this.Respawns >= 1; // not sure what this does...
-    
-    /*
-    public async Task TriggerDeadState()
-    {
-        NRunMusicController.Instance?.UpdateMusicParameter("test_subject_progress", 1f);
-        ++this.CombatState.RunState.ExtraFields.TestSubjectKills;
-        await CreatureCmd.TriggerAnim(this.Creature, "DeadTrigger", 0.0f);
-        this.SetMoveImmediate(this.DeadState, true);
-    }
-    */
-    
-    public override void BeforeRemovedFromRoom()
-    {
-        this.Creature.PowerApplied -= new Action<PowerModel>(this.AfterPowerApplied);
-        this.Creature.PowerRemoved -= new Action<PowerModel>(this.AfterPowerRemoved);
-    }
-    
-    private void AfterPowerApplied(PowerModel power)
-    {
-        if (!(power is IntangiblePower))
-            return;
-        this.SetColor(StsColors.halfTransparentWhite);
-    }
-
-    private void AfterPowerRemoved(PowerModel power)
-    {
-        if (!(power is IntangiblePower))
-            return;
-        this.SetColor(Colors.White);
-    }
     
     private void SetColor(Color color)
     {
         NCombatRoom.Instance?.GetCreatureNode(this.Creature)?.GetSpecialNode<CanvasGroup>("%CanvasGroup")?.SetSelfModulate(color);
     }
+ 
+    private int DesperationAmount
+    {
+        get => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 80 /*0xA0*/, 70);
+    }
     
-    
-    
-    
-    
+    public override async Task AfterAddedToRoom()
+    {
+        await base.AfterAddedToRoom();
+        AnsemDMPower dmPower = await PowerCmd.Apply<AnsemDMPower>((PlayerChoiceContext) new ThrowingPlayerChoiceContext(), this.Creature, (Decimal) this.DesperationAmount, this.Creature, (CardModel) null);
+    }
     
     protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
         List<MonsterState> states = new List<MonsterState>();
-        this.DeadState = new MoveState("RESPAWN_MOVE", new Func<IReadOnlyList<Creature>, Task>(this.RespawnMove), new AbstractIntent[2]
-        {
-            // Desperation Move
-            (AbstractIntent) new HealIntent(),
-            (AbstractIntent) new BuffIntent()
-        })
-        {
-            MustPerformOnceBeforeTransitioning = true
-        };
-        
-        // testing something
-        // Find The Seeker 
-        foreach (Creature creature in CombatState.Enemies)
-        {
-            if (creature.IsEnemy) // Again assuming Ansem is the only enemy for now
-            {
-                if (creature.CurrentHp <= FirstFormHp / 3)
-                {
-                    // Do desperation move.
-                }
-            }
-        }
-        
-        
+  
         MoveState initialState = new MoveState("ENSHROUDING_DARKNESS_MOVE", new Func<IReadOnlyList<Creature>, Task>(this.EnshroudingDarknessMove), new AbstractIntent[1]
         {
             (AbstractIntent) new CardDebuffIntent()
@@ -148,33 +64,18 @@ public class TheSeeker : CustomMonsterModel
         {
             (AbstractIntent) new BuffIntent()
         });
+
+        MoveState moveState1 = new MoveState("WEAK_SINGLE_MOVE", new Func<IReadOnlyList<Creature>, Task>(this.WeakSingleMove), new AbstractIntent[1]);
+        
         
         ConditionalBranchState desperationMoveBranchState = new ConditionalBranchState("DESPERATION_MOVE_BRANCH");
         
-        desperationMoveBranchState.AddState((MonsterState) this.BurnBrightForMeState, (Func<bool>) (() => !this.HasAmalgamDied));
+        //desperationMoveBranchState.AddState((MonsterState) this.BurnBrightForMeState, (Func<bool>) (() => !this.HasAmalgamDied));
         
         
         throw new NotImplementedException();
     }
     
-    private async Task RespawnMove(IReadOnlyList<Creature> targets)
-    {
-        this.Respawns++;
-        NRunMusicController.Instance?.UpdateMusicParameter("test_subject_progress", 2f);
-        SfxCmd.Play(this.Respawns == 1 ? "event:/sfx/enemy/enemy_attacks/test_subject/test_subject_revive_two_heads" : "event:/sfx/enemy/enemy_attacks/test_subject/test_subject_revive_three_heads");
-        await CreatureCmd.TriggerAnim(this.Creature, "RespawnTrigger", 0.0f);
-        await Cmd.Wait(0.8f);
-        this.Creature.GetCreatureNode()?.SetDefaultScaleTo((float) (1.0 + (double) this.Respawns * 0.10000000149011612), 0.1f);
-        await Cmd.Wait(1.15f);
-        this.Creature.GetPower<AdaptablePower>()?.DoRevive();
-        switch (this.Respawns)
-        {
-            case 1:
-                await this.Revive(this.SecondFormHp);
-                PainfulStabsPower painfulStabsPower = await PowerCmd.Apply<PainfulStabsPower>((PlayerChoiceContext) new ThrowingPlayerChoiceContext(), this.Creature, 1M, this.Creature, (CardModel) null);
-                break;
-        }
-    }
     
     private async Task EnshroudingDarknessMove(IReadOnlyList<Creature> targets)
     {
@@ -189,13 +90,24 @@ public class TheSeeker : CustomMonsterModel
         // await CreatureCmd.TriggerAnim(this.Creature, "Cast", 0.5f);
         ConsumingDarknessPower consumingDarknessPower = await PowerCmd.Apply<ConsumingDarknessPower>((PlayerChoiceContext) new ThrowingPlayerChoiceContext(), this.Creature, 1M, this.Creature, (CardModel) null);
     }
-    
-    private async Task Revive(int baseRespawnHp)
+
+    private int WeakSingleMoveDamage
     {
-        this.AssertMutable();
-        Decimal scaledHp = Creature.ScaleHpForMultiplayer((Decimal) baseRespawnHp, this.CombatState.Encounter, this.CombatState.Players.Count, this.CombatState.RunState.CurrentActIndex);
-        Decimal num = await CreatureCmd.SetMaxHp(this.Creature, scaledHp);
-        await CreatureCmd.Heal(this.Creature, scaledHp);
+        get => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 16, 15);
+    }
+    
+    private async Task WeakSingleMove(IReadOnlyList<Creature> targets)
+    {
+        AttackCommand attackCommand = await DamageCmd.Attack((Decimal) this.WeakSingleMoveDamage).FromMonster((MonsterModel) this).Execute((PlayerChoiceContext) null);
+    }
+    
+    // Triggered when Ansem gets down to 1/3 hp by AnsemDMPower
+    public async Task SetDesperation()
+    {
+        /*
+        SfxCmd.Play("event:/sfx/enemy/enemy_attacks/ceremonial_beast/ceremonial_beast_stun");
+        await CreatureCmd.TriggerAnim(this.Creature, "Stun", 0.6f);
+        */
     }
     
 }

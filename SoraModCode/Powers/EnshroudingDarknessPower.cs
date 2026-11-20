@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Afflictions;
@@ -15,13 +16,13 @@ using SoraMod.SoraModCode.Powers;
 
 namespace SoraMod.SoraModCode.Powers;
 
-public class TeemingDarknessPower() : SoraModPower
+public class EnshroudingDarknessPower() : SoraModPower
 {
     // VineShambler's Tangled Power
 
     public override PowerType Type => PowerType.Debuff;
 
-    public override PowerStackType StackType => PowerStackType.Single; // Maybe counter on harder ascensions. 1/5 -> 1/4 cards are affected?
+    public override PowerStackType StackType => PowerStackType.Single;
 
     // Store a dictionary of <CardModel, Iterator Hovertips> so I can restore them after it's played.
     
@@ -30,6 +31,7 @@ public class TeemingDarknessPower() : SoraModPower
         get => HoverTipFactory.FromAffliction<Enshroud>();
     }
 
+    protected override IEnumerable<DynamicVar> CanonicalVars => []; // 1/5 -> 1/4 cards are affected? for higher ascensions
     
     
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
@@ -61,7 +63,10 @@ public class TeemingDarknessPower() : SoraModPower
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Card.Affliction is Enshroud)
+        {
             CardCmd.ClearAffliction(cardPlay.Card);
+            await Cmd.Wait(0.5f); // is this timing caught before card goes into discard...?
+        }
     }
     
     public override Task AfterRemoved(Creature oldOwner)

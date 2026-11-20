@@ -19,7 +19,7 @@ using SoraMod.SoraModCode.Keywords;
 #nullable enable
 namespace BaseLib.Patches.Features;
 
-public static class LinkKeywordPatches
+public static class LinkDamagePatch
 {
     // Can't figure out how to global patch so I'm doing each effect manually...
     // Also need to double check if this is played and it's not the owner... Like you gifted a card... Does Networking count as gifting?

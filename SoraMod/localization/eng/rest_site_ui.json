@@ -1,3 +1,4 @@
 ﻿{
-
+  "OPTION_MELD.description": "[gold]Remove[/gold] a card to [gold]Meld[/gold] with another.",
+  "SORAMOD-CAMPFIRE_SELECT_MELD_TARGET.selectionScreenPrompt": "Select card to [gold]Enchant[/gold]."
 }

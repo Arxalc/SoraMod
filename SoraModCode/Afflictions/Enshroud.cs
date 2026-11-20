@@ -1,4 +1,8 @@
-﻿using MegaCrit.Sts2.Core.Models;
+﻿using Godot;
+using MegaCrit.Sts2.Core.Assets;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
 
 namespace SoraMod.SoraModCode.Encounters;
 
@@ -6,23 +10,5 @@ namespace SoraMod.SoraModCode.Encounters;
 public sealed class Enshroud : AfflictionModel
 {
 
-    public string moddedOverlayPath = "";
-    
-    
-    
-    public string OverlayPath
-    {
-        get
-        {
-            return SceneHelper.GetScenePath("cards/overlays/afflictions/" + this.Id.Entry.ToLowerInvariant());
-        }
-    }
-
-    public Control CreateOverlay()
-    {
-        return PreloadManager.Cache.GetScene(this.OverlayPath).Instantiate<Control>();
-    }
-
-    public bool HasOverlay => ResourceLoader.Exists(this.OverlayPath);
-    
+    //public string moddedOverlayPath = MainFile.ResPath + "/scenes/cards/overlays/afflictions/enshroud.tcsn";
 }

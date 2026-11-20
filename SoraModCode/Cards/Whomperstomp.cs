@@ -16,13 +16,14 @@ using SoraMod.SoraModCode.Keywords;
 
 namespace SoraMod.SoraModCode.Cards;
 
-// This is actually called Whomperstomp in game.
-public class Whomperstomp() : SoraModCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+// This is actually called Whomperstomp in game, not Meow Wounce.
+public class Whomperstomp() : SoraModCard(1, CardType.Attack, CardRarity.Ancient, TargetType.AnyEnemy)
 {
     // Claw-ish. Maybe I should buff every Meow Wounce card on attack. Meow wow bombs...
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [SoraModKeywords.Link];
-    
-    private const string _increaseKey = "Increase";
+    // hmmmmmmmmmmmm
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [SoraModKeywords.Link, CardKeyword.Ethereal];
+    public override bool CanBeGeneratedInCombat => false;
+
     private Decimal _extraDamageFromWouncePlays;
     
     
@@ -36,7 +37,7 @@ public class Whomperstomp() : SoraModCard(1, CardType.Attack, CardRarity.Common,
         }
     }
     
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5M, ValueProp.Move), new DynamicVar("Increase", 2M)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7M, ValueProp.Move), new DynamicVar("Increase", 2M)];
     
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay play)
@@ -49,7 +50,8 @@ public class Whomperstomp() : SoraModCard(1, CardType.Attack, CardRarity.Common,
 
     protected override void OnUpgrade()
     {
-
+        this.DynamicVars["Increase"].UpgradeValueBy(1M);
+        // this.DynamicVars.Damage.UpgradeValueBy(2M); // In case Armament or Apotheosis
     }
     
     private void BuffFromWouncePlay(Decimal extraDamage)
@@ -66,16 +68,27 @@ public class Whomperstomp() : SoraModCard(1, CardType.Attack, CardRarity.Common,
         ResourceInfo resources,
         CardLocation location)
     {
-        location.pileType = PileType.Hand;
-        location.position = CardPilePosition.Top;
-        location.player = Owner;
+        if (card is Whomperstomp)
+        {
+            location.pileType = PileType.Hand;
+            location.position = CardPilePosition.Top;
+            location.player = Owner;
+        }
         return location;
     }
-    
-    public override bool HasTurnEndInHandEffect => true;
-    // Maybe give it Ethereal to prevent spam?
-    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+
+    public override async Task AfterCardExhausted(
+        PlayerChoiceContext choiceContext,
+        CardModel card,
+        bool causedByEthereal)
     {
-        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat((CardModel) this.CombatState.CreateCard<MeowWounce>(this.Owner), PileType.Draw, this.Owner));
+        Decimal currentDamage = this.DynamicVars.Damage.BaseValue;
+            
+        // Create BalloonBurst using CustomerCardModel
+        var balloonBurst = CombatState.CreateCard<BalloonBurst>(Owner);
+
+        balloonBurst.DynamicVars.Damage.BaseValue = currentDamage;
+
+        await CardPileCmd.AddGeneratedCardToCombat(balloonBurst, PileType.Draw, this.Owner);
     }
 }

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://guvtvgosyksa"
-path="res://.godot/imported/kingdom_key.png-715c952fb7834536aeb958cfa8e83376.ctex"
+path="res://.godot/imported/kingdom_key.png-2a85f9732c4dc8899d37f5bbf2957581.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SoraMod/images/relics/kingdom_key.png"
-dest_files=["res://.godot/imported/kingdom_key.png-715c952fb7834536aeb958cfa8e83376.ctex"]
+source_file="res://SoraMod/images/relics/big/kingdom_key.png"
+dest_files=["res://.godot/imported/kingdom_key.png-2a85f9732c4dc8899d37f5bbf2957581.ctex"]
 
 [params]
 

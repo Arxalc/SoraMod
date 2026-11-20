@@ -10,9 +10,9 @@ using MegaCrit.Sts2.Core.Rooms;
 
 namespace SoraMod.SoraModCode.Encounters;
 
-public class TheSeekerBoss : CustomEncounterModel
+public class AnsemBoss : CustomEncounterModel
 {
-    public TheSeekerBoss() : base(RoomType.Boss)
+    public AnsemBoss() : base(RoomType.Boss)
     {
     }
 

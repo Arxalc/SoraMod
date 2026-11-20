@@ -1,3 +1,11 @@
 {
+  "THE_ARCHITECT.talk.SORAMOD-SORA_MOD.0-0r.char": "It's over!",
+  "THE_ARCHITECT.talk.SORAMOD-SORA_MOD.0-0r.next": "Continue",
+  "THE_ARCHITECT.talk.SORAMOD-SORA_MOD.0-1r.ancient": "For you, yes.",
+  "THE_ARCHITECT.talk.SORAMOD-SORA_MOD.0-attack": "Both",
+  "SORAMOD-MASTER_OF_MASTERS.epithet": "First Foreteller",
+  "SORAMOD-MASTER_OF_MASTERS.talk.ANY.0-0r.ancient": "Reusable generic greeting.",
+  "SORAMOD-MASTER_OF_MASTERS.talk.firstVisitEver.0-0.ancient": "First time greeting.",
+  "SORAMOD-MASTER_OF_MASTERS.title": "Master Of Masters"
   
 }

@@ -1,6 +1,14 @@
+using System.Reflection;
+using BaseLib.Patches.Features;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Models;
+using SoraMod.SoraModCode.Enchantments;
 
 namespace SoraMod.SoraModCode;
 
@@ -10,7 +18,8 @@ public partial class MainFile : Node
     public const string ModId = "SoraMod"; //Used for resource filepath
     public const string ResPath = $"res://{ModId}";
 
-    public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } = new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
+    public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } =
+        new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
 
     public static void Initialize()
     {
@@ -18,7 +27,7 @@ public partial class MainFile : Node
         //Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(Assembly.GetExecutingAssembly());
         
         Harmony harmony = new(ModId);
-
         harmony.PatchAll();
+
     }
 }
