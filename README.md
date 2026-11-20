@@ -1,6 +1,6 @@
 # A STS2 Mod for Sora from Kingdom Hearts
-
-May change Keyblade relic's retain for Formchanges.
+Adds a brand new playable character, cards, mechanics, and encounters. 
+Currently WIP.
 
 ## Cards
 Card Archetypes: Attacks (multi-attack combos), Magic (effects), Links (powerful cards effects over multiple turns)
