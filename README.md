@@ -1,7 +1,22 @@
-A WIP STS2 mod for Sora from Kingdom Hearts
-Cards and core mechanics definitely need to be reconsidered because they don't synergize/aren't balanced.
+# A STS2 Mod for Sora from Kingdom Hearts
 
+May change Keyblade relic's retain for Formchanges.
+
+## Cards
 Card Archetypes: Attacks (multi-attack combos), Magic (effects), Links (powerful cards effects over multiple turns)
+Currently 50 BASE cards implemented.
 
-(WIP) 2 New Bosses: The Seeker & The Superior
-(WIP) 1 New Ancient: The Master of Masters
+Cards need to be reconsidered because they don't synergize/balance as much as I'd hope. 
+Summons -> May change to auto progress in exchange for energy. Very slow so far.
+Attacks -> More combo support
+
+## Relics
+Keyblade -> Currently retain. May change to Formchanges after cards are finalized.
+TODO: Add more relics.
+
+## Encounters
+(WIP) Act 1: The Seeker
+(WIP) Act 2: The Superior
+
+## Ancients
+(WIP) Act 3: The Master of Masters
